@@ -1,0 +1,44 @@
+{% extends "newsletter/base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block title %}{% trans "孙北海的Python武器库" %}{% endblock %}
+
+{% block navbar %}
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav nav-underline col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        {% for course in courses %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}">{{ course.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<div class="container">
+    {% for newsletter in newsletters %}
+    <div class="card my-5">
+        <div class="card-header bg-opacity-10 text-start py-3">
+            <h3 class="card-title mb-2">
+                <a href="{{ newsletter.get_absolute_url }}" class="link-dark text-decoration-none">
+                    {{ newsletter.subject }}
+                </a>
+            </h3>
+            <p class="card-subtitle text-secondary">
+                {% blocktranslate with published_at=newsletter.published_at last_name=newsletter.author.last_name first_name=newsletter.author.first_name %}
+                发布于 {{ published_at }}，作者：{{ last_name }}, {{ first_name }}
+                {% endblocktranslate %}
+            </p>
+        </div>
+        <div class="card-body">
+            <a href="{{ newsletter.get_absolute_url }}" class="float-end btn btn-outline-dark border-dark-subtle" tabindex="-1" role="button">{% trans "阅读周报" %}</a>
+        </div>
+    </div>
+    {% endfor %}
+    {% include "newsletter/pagination.html" with page=newsletters %}
+    </div>
+</div>
+{% endblock %}

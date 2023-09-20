@@ -1,0 +1,22 @@
+{% extends "newsletter/base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block title %}{{ newsletter.subject }}{% endblock %}
+
+{% block navbar %}
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav nav-underline col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        {% for course in courses %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ course.get_absolute_url }}">{{ course.title }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
+
+{% block main_content %}
+<iframe srcdoc="{{ newsletter_content }}" title="{{ newsletter.subject }}" style="width: 100%; border:none;"></iframe>
+{% endblock %}

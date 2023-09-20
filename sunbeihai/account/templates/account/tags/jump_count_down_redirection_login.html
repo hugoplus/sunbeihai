@@ -1,0 +1,4 @@
+{% load i18n %}
+
+<p class="card-text my-4">{% trans "页面将在" %}<span id="jump_countdown">{{ count_down_seconds }}</span>{% trans "秒后自动跳转至登录页面。" %}</p>
+<p class="card-text my-4">{% trans "您也可以点击" %}<a href="{% url redirection_page %}">{% trans "此处" %}</a>{% trans "，直接登录。" %}</p>

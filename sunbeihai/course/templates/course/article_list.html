@@ -1,0 +1,74 @@
+{% extends "course/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load course_tags %}
+
+{% block title %}{% trans "孙北海讲Python" %}{% endblock %}
+
+{% block navbar %}
+    {% show_nav_bar %}
+{% endblock %}
+
+{% block main_content %}
+{% if articles.number == 1 %}
+<div id="bookCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        {% for course in courses %}
+        <button type="button" data-bs-target="#bookCarousel" data-bs-slide-to="{{ course.highlight_order }}" {% if course.highlight_order == 1 %} class="active" {% endif %} aria-current="true" aria-label="Slide {{ course.highlight_order|default:''|stringformat:'%s' }}"></button>
+        {% endfor %}
+    </div>
+    <div class="carousel-inner">
+        {% for course in courses %}
+        <div class="carousel-item {% if course.highlight_order == 1 %} active {% endif %}">
+            <img src="{{ course.cover.url }}" class="card-img-top border" alt="{{ course.title }}" width="100%" height="100%">
+            <div class="row">
+                <div class="carousel-caption text-start col-6">
+                    <h1>{{ course.title }}</h1>
+                    <p>{{ course.description }}</p>
+                    <p><a class="btn btn-lg btn-primary" href="{{ course.get_absolute_url }}">{% trans "进入教程" %}</a></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        <button class="carousel-control-prev" type="button" data-bs-target="#bookCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">{% trans "前一页" %}</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#bookCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">{% trans "下一页" %}</span>
+        </button>
+    </div>
+</div>
+{% endif %}
+<div class="container">
+    <div class="border-top border-bottom d-flex justify-content-center align-items-center my-4 py-4">
+        <h1>{% trans "最新文章" %}</h1>
+    </div>
+    {% for article in articles %}
+    <div class="card my-5">
+        <div class="card-header bg-opacity-10 text-start py-3">
+            <h3 class="card-title mb-2">
+                <a href="{{ article.get_absolute_url }}" class="link-dark text-decoration-none">
+                    {{ article.title }}
+                </a>
+            </h3>
+            <p class="card-subtitle text-secondary">
+                {% blocktranslate with published_at=article.published_at last_name=article.author.last_name first_name=article.author.first_name %}
+                发布于 {{ published_at }}，作者：{{ last_name }}, {{ first_name }}
+                {% endblocktranslate %}
+            </p>
+        </div>
+        <div class="card-body">
+            <p class="card-text">
+                {{ article.body|markdown|truncatewords_html:30 }}
+            </p>
+            <a href="{{ article.get_absolute_url }}" class="float-end btn btn-outline-dark border-dark-subtle" tabindex="-1" role="button">{% trans "继续阅读" %}</a>
+        </div>
+    </div>
+    {% endfor %}
+    {% include "course/pagination.html" with page=articles pages=pages %}
+    </div>
+</div>
+{% endblock %}

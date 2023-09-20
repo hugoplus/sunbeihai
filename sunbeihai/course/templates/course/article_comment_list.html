@@ -1,0 +1,63 @@
+{% extends "course/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load course_tags %}
+
+{% block title %}{% trans "评论列表" %}{% endblock %}
+
+{% block navbar %}
+    {% show_nav_bar %}
+{% endblock %}
+
+{% block main_content %}
+<div class="row my-4">
+    <div class="col-2"></div>
+    <div class="col-8 text-center">
+        <a href="{{ article.get_absolute_url }}" class="link-dark">
+            <h3>{{ article.title }}</h3>
+        </a>
+    </div>
+    <div class="col-2"></div>
+</div>
+<div class="row mt-4 mb-5">
+    <div class="col-2"></div>
+    <div class="col-8">
+        {% for comment in comments %}
+            {% if comment|is_list %}
+            {% with comment_0=comment|first_item comment_end=comment|last_item remaining_comments=comment|remaining_items %}
+            <div class="card my-3">
+                <div class="card-header text-secondary">
+                    {{ comment_0.name }} {% trans "发布于" %} {{ comment_0.created_at }}
+                </div>
+                <div class="card-body">
+                    {{ comment_0.body|linebreaks }}
+                    {% for item in remaining_comments %}
+                        <p class="border-top my-3 pt-2 text-secondary">{{ item.name }} {% trans "发布于" %} {{ item.created_at }}</p>
+                        <p>{{ item.body|linebreaks }}</p>
+                    {% endfor %}
+                    <a href="{% url 'course:article_comment_detail' article_id=article.id comment_id=comment_end.id %}" class="float-end btn btn-light btn-sm border" tabindex="-1" role="button">{% trans "回复评论" %}</a>
+                </div>
+            </div>
+            {% endwith %}
+            {% else %}
+            <div class="card my-3">
+                <div class="card-header">
+                    {{ comment.name }} {% trans "发布于" %} {{ comment.created_at }}
+                </div>
+                <div class="card-body">
+                    {{ comment.body|linebreaks }}
+                    <a href="{% url 'course:article_comment_detail' article_id=article.id comment_id=comment.id %}" class="float-end btn btn-light btn-sm border" tabindex="-1" role="button">{% trans "回复评论" %}</a>
+                </div>
+            </div>
+            {% endif %}
+        {% endfor %}
+        {% include "course/comment_form.html" %}
+    </div>
+    <div class="col-2"></div>
+</div>
+{% endblock %}
+
+{% block additional_script %}
+<script src="{% static 'js/sbh_comment.js' %}"></script>
+{% endblock %}

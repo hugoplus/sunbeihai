@@ -1,0 +1,121 @@
+{% load static %}
+{% load i18n %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-4PHRRD6DSJ"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-4PHRRD6DSJ');
+        </script>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="Hugo">
+        <meta name="generator" content="Hugo">
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="icon" href="{% static 'favicon.ico' %}" type="image/x-icon">
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" >
+        <link href="{% static "css/sbh_course.css" %}" rel="stylesheet">
+        <link href="{% static "css/md_vs_styles.css" %}" rel="stylesheet">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5386445412608664" crossorigin="anonymous"></script>
+    </head>
+
+    <body>
+        <header class="p-3 mb-3 border-bottom" id="header">
+            <div class="container-lg">
+                <div class="row flex-nowrap justify-content-between align-items-center">
+                    <div class="col-md-3 justify-content-start align-items-center">
+                        <form id="subscription-form" name="formSubscription" role="subscribe" onsubmit="onSubscribe(event)" method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <label for="newsletter" class="visually-hidden">{% trans "电子邮箱" %}</label>
+                                <input id="newsletter" type="text" class="form-control" placeholder="name@company.com" aria-label="Subscribe" aria-describedby="button-addon" name="subscriber">
+                                <button class="btn btn-primary" id="button-addon" type="submit">{% trans "订阅周报" %}</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="col-6 fs-2 text-center align-items-center">
+                        <a class="link-dark text-decoration-none" href="https://www.sunbeihai.com/">{% trans "孙北海的官方网站" %}</a>
+                    </div>
+                    <div class="col-3 d-flex justify-content-end align-items-center">
+                        {% if request.user.is_authenticated %}
+                        <div class="dropdown text-end">
+                            <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="{% static 'images/user-avatar.png' %}" alt="{{ request.user.username }}" title="{{ request.user.username }}" width="32" height="32" class="rounded-circle">
+                            </a>
+                            <ul class="dropdown-menu text-small">
+                                <li><a class="dropdown-item" href="{% url 'account:password_change' %}" target="_blank">{% trans "修改密码" %}</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'account:logout' %}">{% trans "退出" %}</a></li>
+                            </ul>
+                        </div>
+                        {% else %}
+                        <a class="btn btn-outline-dark border-dark-subtle ms-2 me-1" href="{% url 'account:login' %}" role="button" target="_blank">{% trans "登录" %}</a>
+                        <a class="btn btn-outline-dark border-dark-subtle ms-1 me-2" href="{% url 'account:register' %}" role="button" target="_blank">{% trans "注册" %}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </header>
+        <div class="container-lg mb-3">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    {% block navbar %}{% endblock %}
+                    <form class="d-flex mb-3 mb-lg-0 me-lg-3" role="search" action="{% url 'course:article_search' %}" target="_blank" method="get">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input class="form-control" type="search" placeholder="{% trans '搜索...' %}" aria-label="Search" aria-describedby="button-addon" name="query">
+                            <button class="btn btn-outline-success" id="button-addon" type="submit">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+        </div>
+        <div class="container-lg main">
+            {% block main_content %}{% endblock %}
+        </div>
+        <div class="container">
+            <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-2 border-top">
+                <p class="col-md-4 d-flex align-items-center justify-content-start my-2 mb-md-0 me-md-auto">
+                    <a href="https://www.sunbeihai.com/" class="link-dark text-decoration-none me-2">
+                        {% trans "孙北海的官方网站" %}
+                    </a>
+                    &copy; 2022-2023
+                </p>
+
+                <p class="col-md-4 my-2 text-muted d-flex align-items-center justify-content-center">{% trans "本网站内容全部为原创，如需转载，请联系：" %}<a href="mailto:beihaisun@gmail.com">{% trans "孙北海" %}</a>{% trans "。" %}</p>
+            
+                <div class="col-md-4 justify-content-end align-items-center my-2">
+                    <ul class="nav justify-content-end list-unstyled align-items-center">
+                        <li class="ms-3">
+                            <a href="https://twitter.com/beihaisun?ref_src=twsrc%5Etfw" class="twitter-follow-button" data-show-count="false">Follow @beihaisun</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                        </li>
+                    </ul>
+                </div>
+            </footer>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+        <script src="//cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
+        <script src="{% static 'js/bstreeview.js' %}"></script>
+        <script src="{% static 'js/sbh.js' %}"></script>
+        {% block additional_script %}{% endblock %}
+    </body>
+</html>
+

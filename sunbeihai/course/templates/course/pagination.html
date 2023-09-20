@@ -1,0 +1,27 @@
+{% load i18n %}
+
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-end">
+        {% if page.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page.previous_page_number }}">{% trans "前一页" %}</a></li>
+        {% endif %}
+        {% for page_number in pages %}
+            {% with page_number_index=page_number|first page_number_value=page_number|last %}
+            {% if page_number_value == '…' %}
+            <li class="page-item">
+                <a class="page-link" href="#" aria-label="Ellipsis" onclick="handleEllipsisClick({{ page_number_index }}, {{ page.number }}, {{ page.paginator.num_pages }})">
+                    <span aria-hidden="true">…</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="page-item{% if page.number == page_number_value %} active{% endif %}">
+                <a class="page-link" href="?page={{ page_number_value }}">{{ page_number_value }}</a>
+            </li>
+            {% endif %}
+            {% endwith %}
+        {% endfor %}
+        {% if page.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page.next_page_number }}">{% trans "后一页" %}</a></li>
+        {% endif %}
+    </ul>
+</nav>

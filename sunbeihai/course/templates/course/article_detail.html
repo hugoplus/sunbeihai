@@ -1,0 +1,128 @@
+{% extends "course/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load course_tags %}
+
+{% block title %}{{ article.title }}{% endblock %}
+
+{% block navbar %}
+    {% show_nav_bar course_id %}
+{% endblock %}
+
+{% block main_content %}
+    <div class="row">
+        <div class="col-3">
+            <div id="treeview"></div>
+        </div>
+        <div class="col-9">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">{{ article.title }}</h1>
+                    <p class="card-subtitle text-secondary my-3">
+                        {% blocktranslate with published_at=article.published_at last_name=article.author.last_name first_name=article.author.first_name %}
+                        发布于 {{ published_at }}，作者：{{ last_name }}, {{ first_name }}
+                        {% endblocktranslate %}
+                    </p>
+                    <hr>
+                    <p class="card-text mt-4 mb-3">
+                        {% if article.need_login %}
+                            {% if user.is_authenticated %}
+                            {{ article.body|markdown|safe }}
+                            {% else %}
+                            {{ article.body|markdown|safe|truncatewords_html:60 }}
+                            <div class="container text-center border rounded p-3" style="background-color: #F0F8FF">
+                                {% trans "该文章需要登录才能继续阅读。" %}
+                                <hr>
+                                <a class="btn btn-primary border ms-2 me-1" href="{% url 'account:login' %}?next={{ request.path }}" role="button">{% trans "登录" %}</a>
+                                <a class="btn btn-light border ms-1 me-2" href="{% url 'account:register' %}" role="button" target="_blank">{% trans "注册" %}</a>
+                            </div>
+                            {% endif %}
+                        {% else %}
+                        {{ article.body|markdown|safe }}
+                        {% endif %}
+                    </p>
+                    <div class="alert alert-light text-secondary mt-4 mb-2" role="alert">
+                        {% trans "版权声明：禁止转载和抄袭本网站的所有文章和教程！博主保留一切权利！" %}
+                    </div>
+                </div>
+            </div>
+            <div class="container my-4" style="height: auto; overflow: hidden;">
+                {% if previous_article_url %}
+                <a href="{{ previous_article_url }}" class="float-start btn btn-light border" tabindex="-1" role="button">
+                {% else %}
+                <a href="" class="float-start btn btn-light border disabled" tabindex="-1" role="button" aria-disabled="true">
+                {% endif %}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-left" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                    </svg>{% trans "前一页" %}
+                </a>
+                {% if next_article_url %}
+                <a href="{{ next_article_url }}" class="float-end btn btn-light border" tabindex="-1" role="button">
+                {% else %}
+                <a href="" class="float-end btn btn-light border disabled" tabindex="-1" role="button" aria-disabled="true">
+                {% endif %}
+                {% trans "后一页" %}<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-right" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="card my-4 px-3 pt-3">
+                <div class="border-bottom mb-3"><p>{% show_comment_quantity article.id %}</p></div>
+                {% for comment in comments %}
+                    {% if comment|is_list %}
+                    {% with comment_0=comment|first_item comment_end=comment|last_item remaining_comments=comment|remaining_items %}
+                    <div class="card my-3">
+                        <div class="card-header text-secondary">
+                            {{ comment_0.name }} {% trans "发布于" %} {{ comment_0.created_at }}
+                        </div>
+                        <div class="card-body">
+                            {{ comment_0.body|linebreaks }}
+                            {% for item in remaining_comments %}
+                                <p class="border-top my-3 pt-2 text-secondary">{{ item.name }} {% trans "发布于" %} {{ item.created_at }}</p>
+                                <p>{{ item.body|linebreaks }}</p>
+                            {% endfor %}
+                            <a href="{% url 'course:article_comment_detail' article_id=article.id comment_id=comment_end.id %}" class="float-end btn btn-light btn-sm border" tabindex="-1" role="button">{% trans "回复评论" %}</a>
+                        </div>
+                    </div>
+                    {% endwith %}
+                    {% else %}
+                    <div class="card my-3">
+                        <div class="card-header">
+                            {{ comment.name }} {% trans "发布于" %} {{ comment.created_at }}
+                        </div>
+                        <div class="card-body">
+                            {{ comment.body|linebreaks }}
+                            <a href="{% url 'course:article_comment_detail' article_id=article.id comment_id=comment.id %}" class="float-end btn btn-light btn-sm border" tabindex="-1" role="button">{% trans "回复评论" %}</a>
+                        </div>
+                    </div>
+                    {% endif %}
+                {% endfor %}
+                {% if comment_more %}
+                <div>
+                    <a href="{% url 'course:article_comment_list' article_id=article.id %}" class="float-end btn btn-light border" tabindex="-1" role="button">{% trans "查看更多评论" %}</a>
+                </div>
+                {% endif %}
+                {% include "course/comment_form.html" %}
+            </div>
+        </div>
+    </div>
+    <div align="center">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5386445412608664" crossorigin="anonymous"></script>
+        <!-- sunbeihai_bottom_ad -->
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-5386445412608664"
+            data-ad-slot="4785126423"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+{% endblock %}
+
+{% block additional_script %}
+{% show_treeview content_tree article_title %}
+<script src="{% static 'js/sbh_comment.js' %}"></script>
+{% endblock %}

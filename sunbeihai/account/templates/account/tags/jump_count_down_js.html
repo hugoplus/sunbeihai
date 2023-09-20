@@ -1,0 +1,14 @@
+<script language="javascript">
+    let num = {{ count_down_seconds }}; 
+    window.setTimeout("doUpdate()", 1000);
+    function doUpdate(){
+        if(num != 0){
+            num --;
+            window.setTimeout("doUpdate()", 1000);
+            document.getElementById('jump_countdown').innerHTML = num;
+        }else{
+            num = 5;
+            window.location = "{% url redirection_page %}"; 
+        }
+    }
+</script>

@@ -1,0 +1,62 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=sunbeihai
+      - POSTGRES_USER=sunbeihai
+      - POSTGRES_PASSWORD=sunbeihai
+
+  redis:
+    restart: unless-stopped
+    image: redis:7.2.1
+    expose: 
+      - 6379
+
+  web:
+    build: .
+    command: ["./wait-for-it.sh", "db:5432", "--",
+      "uwsgi", "--ini", "/code/config/uwsgi/uwsgi.ini"
+    ]
+    restart: always
+    volumes:
+      - .:/code
+    environment:
+      - DJANGO_SETTINGS_MODULE=sunbeihai.settings.local
+      - POSTGRES_DB=sunbeihai
+      - POSTGRES_USER=sunbeihai
+      - POSTGRES_PASSWORD=sunbeihai
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_APP=sunbeihai.celery
+    depends_on:
+      - db
+      - redis
+
+  nginx:
+    image: nginx:1.23.1
+    restart: always
+    volumes:
+      - ./config/nginx:/etc/nginx/templates
+      - .:/code
+    ports:
+      - "80:80"
+      - "443:443"
+
+  celery:
+    restart: unless-stopped
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    entrypoint: /code/sunbeihai/worker_entrypoint.sh
+    volumes:
+      - .:/code
+    environment:
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+      - CELERY_APP=sunbeihai.celery
+    depends_on:
+      - redis
+      - web

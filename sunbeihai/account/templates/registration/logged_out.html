@@ -1,0 +1,30 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load account_tags %}
+
+{% block title %}{% trans "退出" %}{% endblock %}
+
+{% block main_content %}
+<div class="row my-5">
+    <div class="col-4"></div>
+    <div class="col-4">
+        <div class="card text-center">
+            <div class="card-header text-center"><h4>{% trans "退出" %}</h4></div>
+            <div class="card-body text-center">
+                <p class="card-title"></p>
+                <div class="alert alert-success" role="alert">
+                    {% trans "您已成功退出系统。" %}
+                </div>
+                {% load_jump_count_down_redirection_homepage %}
+            </div>
+            <div class="card-footer text-muted"><h5>{% load_greeting_message %}</h5></div>
+        </div>
+    </div>
+    <div class="col-4"></div>
+</div>
+{% endblock %}
+
+{% block additional_script %}
+{% load_jump_count_down_js %}
+{% endblock %}

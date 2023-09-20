@@ -1,0 +1,29 @@
+{{ content_tree|json_script:'content_tree_data' }}
+{{ article_title|json_script:'article_data' }}
+
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        var defaultData = JSON.parse(document.getElementById('content_tree_data').textContent);
+        var defaultArticle = JSON.parse(document.getElementById('article_data').textContent);
+
+        $('#treeview').treeview({
+                            data: defaultData,
+                            levels:3,
+                            expandIcon: 'fa fa-light fa-caret-right',
+                            collapseIcon: 'fa fa-light fa-caret-down',
+                            indent: 1.25,
+                            parentsMarginLeft: '1.25rem',
+                            openNodeLinkOnNewTab: false,
+                            highlightSearchResults: false,
+                            onNodeSelected: function(event, node) {window.open(node['href'], "_self");}
+        });
+
+        var options = {
+            ignoreCase: false,
+            exactMatch: false,
+            revealResults: false
+        };
+        var nodes = $('#treeview').treeview('search', [defaultArticle['title'], options]);
+        $('#treeview').treeview('selectNode', [nodes, {silent: true}]);
+    })
+</script>

@@ -1,0 +1,18 @@
+{% extends 'account/base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "禁止访问" %}{% endblock %}
+
+{% block main_content %}
+<div class="row mt-5">
+    <div class="col-3"></div>
+    <div class="col-6 text-center">
+        <h1 class="display-1"><i class="fa fa-exclamation-triangle text-danger"></i> 403</h1>
+        <h2 class="my-4">{% trans "对不起！您尚无授权访问该页面。" %}</h2>
+        <p class="my-4">{% trans "您可以联系我们的技术支持团队，或点击下方的按钮返回主页。" %}</p>
+        <a href="https://www.sunbeihai.com" class="btn btn-outline-dark my-4"><i class="fa fa-home"></i> {% trans "返回主页" %}</a>
+    </div>
+    <div class="col-3"></div>
+</div>
+{% endblock %}

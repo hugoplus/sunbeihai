@@ -1,0 +1,62 @@
+{% extends "course/base.html" %}
+
+{% load i18n %}
+{% load static %}
+{% load course_tags %}
+
+{% block title %}{% trans "评论" %}{% endblock %}
+
+{% block navbar %}
+    {% show_nav_bar %}
+{% endblock %}
+
+{% block main_content %}
+<div class="row my-4">
+    <div class="col-2"></div>
+    <div class="col-8 text-center">
+        <a href="{{ article.get_absolute_url }}" class="link-dark">
+            <h3>{{ article.title }}</h3>
+        </a>
+    </div>
+    <div class="col-2"></div>
+</div>
+<div class="row mt-4 mb-5">
+    <div class="col-2"></div>
+    <div class="col-8">
+        {% for comment in comments %}
+        <div class="card my-3">
+            <div class="card-header">
+                {{ comment.name }} {% trans "发布于" %} {{ comment.created_at }}
+            </div>
+            <div class="card-body">
+                {{ comment.body|linebreaks }}
+            </div>
+        </div>
+        {% endfor %}
+        <h4 class="my-4">{% trans "添加我的评论" %}</h4>
+        <form class="mt-3" id="comment_form" action="{% url 'course:article_comment_append' article.id last_comment.id %}" method="post">
+            {% for field in form %}
+            <div class="mb-3">
+                {% if field.errors %}
+                <ul>
+                    {% for error in field.errors %}
+                    <li class="text-danger">{{ error|escape }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <p>{{ field.label_tag }}</p>
+                {{ field }}
+                <div class="text-body-tertiary my-2">{{ field.help_text|safe }}</div>
+            </div>
+            {% endfor %}
+            {% csrf_token %}
+            <p><input class="btn btn-light border my-3" type="submit" value="{% trans '提交评论' %}"></p>
+        </form>
+    </div>
+    <div class="col-2"></div>
+</div>
+{% endblock %}
+
+{% block additional_script %}
+<script src="{% static 'js/sbh_comment.js' %}"></script>
+{% endblock %}
